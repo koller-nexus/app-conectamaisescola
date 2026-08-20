@@ -42,6 +42,22 @@ export interface User {
   emailVerified: boolean;
 }
 
+export interface Organization {
+  id: string;
+  name: string;
+  legal_name: string;
+  document: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface OrganizationInput {
+  name: string;
+  legal_name?: string;
+  document: string;
+}
+
 export interface RoleInput {
   code: string;
   name: string;
@@ -243,6 +259,31 @@ const MOCK_USERS: User[] = [
   { id: "usr-004", email: "assistente@escola.com", status: "active", emailVerified: true },
 ];
 
+export interface UserDetail {
+  user: User;
+  roles: { id: string; name: string }[];
+  permissions: { id: string; name: string }[];
+}
+
+export interface UserUpdateInput {
+  email?: string;
+  password?: string;
+  status?: string;
+  reason?: string;
+}
+
+export interface CreateAdminUserInput {
+  email: string;
+  password: string;
+  registrationType: string;
+  reason?: string;
+}
+
+export interface CreateAdminUserResponse {
+  user: User;
+  role: string;
+}
+
 export async function getUsers(token?: string | null): Promise<User[]> {
   if (!token) return MOCK_USERS;
   try {
@@ -251,4 +292,106 @@ export async function getUsers(token?: string | null): Promise<User[]> {
   } catch {
     return MOCK_USERS;
   }
+}
+
+export async function getUser(token: string, id: string): Promise<UserDetail> {
+  return request<UserDetail>(`/api/v1/users/${id}`, { token });
+}
+
+export async function updateUser(
+  token: string,
+  id: string,
+  input: UserUpdateInput,
+): Promise<User> {
+  return request<User>(`/api/v1/users/${id}`, {
+    method: "PATCH",
+    body: input,
+    token,
+  });
+}
+
+export async function deleteUser(token: string, id: string): Promise<void> {
+  await request<unknown>(`/api/v1/users/${id}`, { method: "DELETE", token });
+}
+
+export async function createAdminUser(
+  token: string,
+  input: CreateAdminUserInput,
+): Promise<CreateAdminUserResponse> {
+  return request<CreateAdminUserResponse>("/api/v1/admin/users", {
+    method: "POST",
+    body: input,
+    token,
+  });
+}
+
+const MOCK_ORGANIZATIONS: Organization[] = [
+  {
+    id: "org-001",
+    name: "Escola Municipal Conecta",
+    legal_name: "Escola Municipal Conecta LTDA",
+    document: "12345678000199",
+    status: "active",
+    created_at: "",
+    updated_at: "",
+  },
+];
+
+export async function getOrganizations(
+  token?: string | null,
+): Promise<Organization[]> {
+  if (!token) return MOCK_ORGANIZATIONS;
+  try {
+    const res = await request<{ items: Organization[] }>(
+      "/api/v1/organizations",
+      { token },
+    );
+    return res.items;
+  } catch {
+    return MOCK_ORGANIZATIONS;
+  }
+}
+
+export async function createOrganization(
+  token: string,
+  input: OrganizationInput,
+): Promise<Organization> {
+  return request<Organization>("/api/v1/organizations", {
+    method: "POST",
+    body: input,
+    token,
+  });
+}
+
+export interface OrganizationUpdateInput {
+  name?: string;
+  legal_name?: string;
+  document?: string;
+  status?: string;
+}
+
+export async function getOrganization(
+  token: string,
+  id: string,
+): Promise<Organization> {
+  return request<Organization>(`/api/v1/organizations/${id}`, { token });
+}
+
+export async function updateOrganization(
+  token: string,
+  id: string,
+  input: OrganizationUpdateInput,
+): Promise<Organization> {
+  return request<Organization>(`/api/v1/organizations/${id}`, {
+    method: "PATCH",
+    body: input,
+    token,
+  });
+}
+
+export async function deleteOrganization(token: string, id: string): Promise<void> {
+  await request<unknown>(`/api/v1/organizations/${id}`, {
+    method: "DELETE",
+    token,
+  });
 }

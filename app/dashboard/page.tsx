@@ -18,7 +18,7 @@ const quickActions = [
   { label: "Exportar relatório geral", href: "/dashboard/relatorios" },
   { label: "Financeiro & NF-e", href: "/dashboard/financeiro" },
   { label: "Papéis", href: "/dashboard/papeis" },
-  { label: "Permissões", href: "/dashboard/permissões" },
+  { label: "Permissões", href: "/dashboard/permissoes" },
 ];
 
 const events = [

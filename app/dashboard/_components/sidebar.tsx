@@ -94,8 +94,9 @@ export default function Sidebar({ isAdmin }: { isAdmin: boolean }) {
           {
             title: "Administração",
             items: [
+              { label: "Organizações", href: "/dashboard/organizacoes", icon: icon(ICONS.school) },
               { label: "Papéis", href: "/dashboard/papeis", icon: icon(ICONS.shield) },
-              { label: "Permissões", href: "/dashboard/permissões", icon: icon(ICONS.settings) },
+              { label: "Permissões", href: "/dashboard/permissoes", icon: icon(ICONS.settings) },
               { label: "Usuários", href: "/dashboard/usuarios", icon: icon(ICONS.users) },
             ],
           } as NavSection,
