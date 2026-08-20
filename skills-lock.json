@@ -13,6 +13,12 @@
       "skillPath": "packages/playground/.agents/skills/frontend-design/SKILL.md",
       "computedHash": "537c1df9d0c694ecf9139a911f9ad0bd111a7ebc173a55457568459e543fe75b"
     },
+    "test": {
+      "source": "react/react",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/test/SKILL.md",
+      "computedHash": "14fabeabacc8be3ea52f7dc209f45d132b2a81d4bdf2a67a73687865594a4d76"
+    },
     "vercel-cli-with-tokens": {
       "source": "vercel-labs/agent-skills",
       "sourceType": "github",
