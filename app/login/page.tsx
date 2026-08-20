@@ -61,31 +61,32 @@ export default function LoginPage() {
     }
   }
 
+  const labelClass =
+    "font-mono text-xs font-semibold uppercase tracking-wide text-brand-text-secondary";
+
   const inputClass = (hasError: boolean) =>
-    `h-11 rounded-lg border bg-white px-3.5 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 disabled:bg-zinc-50 ${
+    `h-11 w-full rounded-lg border bg-black/40 px-3.5 text-sm text-white placeholder:text-zinc-600 transition-colors focus:outline-none focus:ring-2 disabled:opacity-60 ${
       hasError
-        ? "border-red-400 focus:border-red-500 focus:ring-red-200"
-        : "border-zinc-300 focus:border-brand-primary focus:ring-brand-lilac"
+        ? "border-red-500/70 focus:border-red-400 focus:ring-red-500/30"
+        : "border-brand-border focus:border-brand-accent focus:ring-brand-accent/30"
     }`;
 
   return (
-    <main className="relative flex min-h-full flex-1 items-center justify-center overflow-hidden bg-white px-4 py-12">
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0"
-      >
-        <div className="absolute -top-40 left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-brand-lilac-soft blur-3xl" />
-        <div className="absolute -bottom-48 -left-32 h-[420px] w-[420px] rounded-full bg-brand-lilac-soft/60 blur-3xl" />
-        <div className="absolute -right-40 top-1/3 h-[380px] w-[380px] rounded-full bg-brand-lilac-soft/40 blur-3xl" />
+    <main className="relative flex min-h-full flex-1 items-center justify-center overflow-hidden bg-background px-4 py-12">
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+        <div className="absolute -top-48 left-1/2 h-[560px] w-[560px] -translate-x-1/2 rounded-full bg-brand-primary/25 blur-3xl" />
+        <div className="absolute -bottom-56 -left-40 h-[460px] w-[460px] rounded-full bg-brand-accent/15 blur-3xl" />
+        <div className="absolute -right-44 top-1/3 h-[420px] w-[420px] rounded-full bg-brand-primary/10 blur-3xl" />
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:48px_48px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_40%,black,transparent)]" />
       </div>
 
       <div className="relative w-full max-w-sm">
-        <div className="mb-8 flex flex-col items-center text-center">
-          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-primary shadow-lg shadow-brand-primary/25">
+        <div className="mb-8 flex flex-col items-center text-center animate-rise">
+          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-lg border border-brand-border bg-brand-surface shadow-lg shadow-black/40">
             <svg
               viewBox="0 0 24 24"
               fill="none"
-              className="h-7 w-7 text-white"
+              className="h-7 w-7 text-brand-accent"
               aria-hidden="true"
             >
               <path
@@ -102,26 +103,28 @@ export default function LoginPage() {
               />
             </svg>
           </div>
-          <h1 className="font-display text-2xl font-semibold tracking-tight text-zinc-900">
+          <p className="mb-3 font-mono text-xs font-semibold uppercase tracking-[0.2em] text-brand-accent">
             ConectaMaisEscola
+          </p>
+          <h1 className="text-3xl font-medium leading-tight tracking-tight text-white">
+            Acesse a plataforma de gestão escolar
           </h1>
-          <p className="mt-2 text-sm leading-relaxed text-zinc-500">
-            Acesse sua conta para acompanhar a vida escolar.
+          <p className="mt-3 text-sm leading-relaxed text-brand-text-secondary">
+            Entre com sua conta institucional para gerenciar a rotina da
+            escola.
           </p>
         </div>
 
         <form
           onSubmit={handleSubmit}
           noValidate
-          className="rounded-2xl border border-zinc-200 bg-white/90 p-6 shadow-sm backdrop-blur"
+          className="rounded-lg border border-brand-border bg-brand-surface p-6 shadow-2xl shadow-black/40 animate-rise"
+          style={{ animationDelay: "80ms" }}
         >
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-5">
             <div className="flex flex-col gap-1.5" suppressHydrationWarning>
-              <label
-                htmlFor="email"
-                className="text-sm font-medium text-zinc-700"
-              >
-                Email
+              <label htmlFor="email" className={labelClass}>
+                Email profissional
               </label>
               <input
                 id="email"
@@ -144,20 +147,14 @@ export default function LoginPage() {
                 placeholder="voce@exemplo.com"
               />
               {fieldErrors.email ? (
-                <p
-                  id="email-error"
-                  className="text-sm text-red-600"
-                >
+                <p id="email-error" className="text-sm text-brand-error">
                   {fieldErrors.email}
                 </p>
               ) : null}
             </div>
 
             <div className="flex flex-col gap-1.5" suppressHydrationWarning>
-              <label
-                htmlFor="password"
-                className="text-sm font-medium text-zinc-700"
-              >
+              <label htmlFor="password" className={labelClass}>
                 Senha
               </label>
               <div className="relative">
@@ -181,7 +178,7 @@ export default function LoginPage() {
                   aria-describedby={
                     fieldErrors.password ? "password-error" : undefined
                   }
-                  className={`${inputClass(Boolean(fieldErrors.password))} w-full pr-11`}
+                  className={`${inputClass(Boolean(fieldErrors.password))} pr-11`}
                   placeholder="••••••••"
                 />
                 <button
@@ -192,7 +189,7 @@ export default function LoginPage() {
                     showPassword ? "Ocultar senha" : "Mostrar senha"
                   }
                   aria-pressed={showPassword}
-                  className="absolute inset-y-0 right-0 flex w-11 items-center justify-center rounded-r-lg text-zinc-500 transition-colors hover:text-zinc-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-lilac disabled:opacity-50"
+                  className="absolute inset-y-0 right-0 flex w-11 items-center justify-center rounded-r-lg text-zinc-500 transition-colors hover:text-zinc-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent disabled:opacity-50"
                 >
                   {showPassword ? (
                     <svg
@@ -237,20 +234,26 @@ export default function LoginPage() {
                 </button>
               </div>
               {fieldErrors.password ? (
-                <p
-                  id="password-error"
-                  className="text-sm text-red-600"
-                >
+                <p id="password-error" className="text-sm text-brand-error">
                   {fieldErrors.password}
                 </p>
               ) : null}
             </div>
           </div>
 
+          <div className="mt-5 flex items-center justify-end">
+            <a
+              href="/forgot-password"
+              className="rounded text-sm font-medium text-brand-accent transition-colors hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent"
+            >
+              Esqueci minha senha
+            </a>
+          </div>
+
           {error ? (
             <p
               role="alert"
-              className="mt-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
+              className="mt-4 rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-2 text-sm text-red-300"
             >
               {error}
             </p>
@@ -259,7 +262,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="mt-6 flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-brand-primary px-4 text-sm font-semibold text-white transition-colors hover:bg-brand-primary-hover focus:outline-none focus:ring-2 focus:ring-brand-lilac focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+            className="mt-6 flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-brand-primary px-4 text-sm font-semibold text-white shadow-lg shadow-brand-primary/30 transition-all hover:-translate-y-0.5 hover:bg-brand-primary-hover hover:shadow-brand-primary/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent focus-visible:ring-offset-2 focus-visible:ring-offset-brand-surface disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0"
           >
             {loading ? (
               <>
@@ -284,22 +287,39 @@ export default function LoginPage() {
                     strokeLinecap="round"
                   />
                 </svg>
-                Entrando…
+                Autenticando…
               </>
             ) : (
-              "Entrar"
+              "Acessar plataforma"
             )}
           </button>
 
-          <div className="mt-4 text-center">
+          <p className="mt-5 text-center text-xs leading-relaxed text-zinc-500">
+            Ao continuar, você concorda com os{" "}
             <a
-              href="/forgot-password"
-              className="rounded text-sm font-medium text-brand-primary hover:text-brand-primary-hover focus:outline-none focus:ring-2 focus:ring-brand-lilac"
+              href="/terms"
+              className="rounded text-brand-text-secondary underline decoration-brand-border underline-offset-2 transition-colors hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent"
             >
-              Esqueci minha senha
+              Termos de Serviço
+            </a>{" "}
+            e a{" "}
+            <a
+              href="/privacy"
+              className="rounded text-brand-text-secondary underline decoration-brand-border underline-offset-2 transition-colors hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent"
+            >
+              Política de Privacidade
             </a>
-          </div>
+            .
+          </p>
         </form>
+
+        <div className="mt-6 flex items-center justify-center gap-2 font-mono text-xs text-brand-text-secondary animate-rise">
+          <span
+            className="h-1.5 w-1.5 rounded-full bg-emerald-400"
+            aria-hidden="true"
+          />
+          Sistema ativo · Roteamento inteligente
+        </div>
       </div>
     </main>
   );
