@@ -3,6 +3,7 @@
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { login } from "@/lib/auth";
+import { persistSession } from "@/lib/auth-actions";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -50,7 +51,8 @@ export default function LoginPage() {
 
     setLoading(true);
     try {
-      await login(trimmedEmail, password);
+      const data = await login(trimmedEmail, password);
+      await persistSession(data.accessToken);
       router.push("/dashboard");
     } catch (err) {
       setError(
