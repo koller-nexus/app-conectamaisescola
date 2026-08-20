@@ -10,6 +10,13 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 # Project Skills
 
+# Design
+
+- `DESIGN.md` is the source of truth for authentication screens — follow its palette, typography, and composition before adapting copy.
+- Palette tokens live in `app/globals.css` under `@theme inline` (brand-*): bg `#0A0A0A`, surface `#18181B`, primary `#2563EB`, accent `#3B82F6`, border `#27272A`, text `#FFFFFF`/`#A1A1AA`.
+- Fonts: `--font-sans` = Inter, `--font-mono` = JetBrains Mono (defined in `app/layout.tsx`). Use mono for labels/technical metadata, sans for body/display.
+- Tailwind v4: no `tailwind.config.js`; tokens are CSS vars in globals.css.
+
 Load the matching skill with the `skill` tool at the START of every session / whenever the task matches its description. Do not rely on memory — invoke the skill to get current instructions.
 
 ## `.opencode/skills/` (design & UI)
