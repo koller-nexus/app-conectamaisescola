@@ -1,18 +1,21 @@
-const API_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
-
-let accessToken: string | null = null;
+export interface LoginUser {
+  id: string;
+  name: string;
+  last_name: string;
+  email: string;
+  active: boolean;
+  email_verified_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
 
 export interface LoginResponse {
-  accessToken: string;
-  expiresAt: string;
-  csrfToken: string;
-  user: {
-    id: string;
-    email: string;
-    status: string;
-    emailVerified: boolean;
-  };
+  access_token: string;
+  refresh_token: string;
+  token_type: string;
+  expires_in: number;
+  csrf_token: string;
+  user: LoginUser;
 }
 
 export class LoginError extends Error {
@@ -25,21 +28,16 @@ export class LoginError extends Error {
   }
 }
 
-export function getAccessToken(): string | null {
-  return accessToken;
-}
-
 export async function login(
   email: string,
   password: string,
 ): Promise<LoginResponse> {
   let response: Response;
   try {
-    response = await fetch(`${API_URL}/api/v1/auth/login`, {
+    response = await fetch("/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
-      credentials: "include",
     });
   } catch {
     throw new LoginError(
@@ -47,9 +45,19 @@ export async function login(
     );
   }
 
+  const data = (await response.json().catch(() => null)) as
+    | (LoginResponse & { error?: string; code?: string })
+    | null;
+
   if (!response.ok) {
     if (response.status === 401) {
       throw new LoginError("Email ou senha inválidos.", response.status);
+    }
+    if (response.status === 403 && data?.code === "email_not_verified") {
+      throw new LoginError(
+        "Email não verificado. Confirme seu email antes de entrar.",
+        response.status,
+      );
     }
     if (response.status === 429) {
       throw new LoginError(
@@ -58,24 +66,21 @@ export async function login(
       );
     }
     throw new LoginError(
-      "Não foi possível entrar. Tente novamente em instantes.",
+      data?.error ?? "Não foi possível entrar. Tente novamente em instantes.",
       response.status,
     );
   }
 
-  const data = (await response.json()) as LoginResponse;
-  accessToken = data.accessToken;
-  return data;
+  return data as LoginResponse;
 }
 
 export async function forgotPassword(email: string): Promise<void> {
   let response: Response;
   try {
-    response = await fetch(`${API_URL}/api/v1/auth/forgot-password`, {
+    response = await fetch("/api/auth/forgot-password", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email }),
-      credentials: "include",
     });
   } catch {
     throw new LoginError(
@@ -84,8 +89,11 @@ export async function forgotPassword(email: string): Promise<void> {
   }
 
   if (!response.ok) {
+    const data = (await response.json().catch(() => null)) as {
+      error?: string;
+    } | null;
     throw new LoginError(
-      "Não foi possível enviar o email de recuperação. Tente novamente em instantes.",
+      data?.error ?? "Não foi possível enviar o email de recuperação.",
       response.status,
     );
   }

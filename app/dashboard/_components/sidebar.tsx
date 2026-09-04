@@ -41,14 +41,17 @@ const ICONS = {
   book: "M4 5a2 2 0 0 1 2-2h14v16H6a2 2 0 0 0-2 2V5ZM4 21h16",
   grades: "M4 19V5a2 2 0 0 1 2-2h13v16M9 9h6M9 13h6M4 21h16",
   staff: "M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM5 21a7 7 0 0 1 14 0",
-  apple: "M12 3c.5-1.5 2-2.5 3.5-2.5 0 2-1 3-2.5 3.5C12 4 11.5 3.5 12 3ZM8 8c0-1.5 1-2.5 2-3 1.5-1 3-1 4.5-1M12 5c-1-1.5-3-2-4.5-2-1 1-1.5 3-.5 4.5",
+  apple:
+    "M12 3c.5-1.5 2-2.5 3.5-2.5 0 2-1 3-2.5 3.5C12 4 11.5 3.5 12 3ZM8 8c0-1.5 1-2.5 2-3 1.5-1 3-1 4.5-1M12 5c-1-1.5-3-2-4.5-2-1 1-1.5 3-.5 4.5",
   finance: "M12 3v18M5 8h14M7 8c0-2 2-3 5-3s5 1 5 3c0 2-2 3-5 3S7 10 7 8ZM4 13h16M6 13c0 2 2 3 6 3s6-1 6-3",
   report: "M4 4v16h16M8 15l3-3 3 3 5-6",
   wall: "M4 5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5ZM8 8h8M8 12h8M8 16h5",
   calendar: "M4 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7ZM16 3v4M8 3v4M4 11h16",
   profile: "M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM5 21a7 7 0 0 1 14 0",
-  settings: "M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3h0a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5h0a1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9v0a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z",
+  settings:
+    "M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3h0a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5h0a1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9v0a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z",
   shield: "M12 3l7 3v5c0 4.5-3 8.5-7 10-4-1.5-7-5.5-7-10V6l7-3Z",
+  invites: "M4 6.5c0-1.1.9-2 2-2h12a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H8.5L4 21.5V6.5ZM4 8l8 5 8-5",
   dashboard:
     "M4 4h7v7H4V4ZM13 4h7v4h-7V4ZM13 10h7v10h-7V10ZM4 13h7v7H4v-7Z",
 };
@@ -94,10 +97,10 @@ export default function Sidebar({ isAdmin }: { isAdmin: boolean }) {
           {
             title: "Administração",
             items: [
-              { label: "Organizações", href: "/dashboard/organizacoes", icon: icon(ICONS.school) },
               { label: "Papéis", href: "/dashboard/papeis", icon: icon(ICONS.shield) },
               { label: "Permissões", href: "/dashboard/permissoes", icon: icon(ICONS.settings) },
               { label: "Usuários", href: "/dashboard/usuarios", icon: icon(ICONS.users) },
+              { label: "Convites", href: "/dashboard/convites", icon: icon(ICONS.invites) },
             ],
           } as NavSection,
         ]
@@ -113,16 +116,20 @@ export default function Sidebar({ isAdmin }: { isAdmin: boolean }) {
 
   return (
     <aside
-      className={`sticky top-0 hidden h-screen shrink-0 flex-col border-r border-brand-border bg-brand-surface lg:flex ${
+      className={`sticky top-0 hidden h-screen shrink-0 flex-col border-r border-brand-border bg-brand-surface/90 backdrop-blur lg:flex ${
         collapsed ? "w-16" : "w-64"
       } transition-[width] duration-200`}
     >
-      <div className="flex h-16 items-center gap-2.5 border-b border-brand-border px-4">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-brand-border bg-black/40">
+      <div
+        className={`flex h-16 items-center border-b border-brand-border ${
+          collapsed ? "justify-center px-0" : "gap-2.5 px-4"
+        }`}
+      >
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-brand-primary to-brand-accent shadow-glow">
           <svg
             viewBox="0 0 24 24"
             fill="none"
-            className="h-4 w-4 text-brand-accent"
+            className="h-4 w-4 text-white"
             aria-hidden="true"
           >
             <path
@@ -131,10 +138,16 @@ export default function Sidebar({ isAdmin }: { isAdmin: boolean }) {
               strokeWidth="1.8"
               strokeLinejoin="round"
             />
+            <path
+              d="M8 10h8M8 13h5"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+            />
           </svg>
         </div>
         {!collapsed && (
-          <span className="font-mono text-xs font-semibold uppercase tracking-wide text-white">
+          <span className="truncate font-mono text-xs font-semibold uppercase tracking-wide text-white">
             Conecta<span className="text-brand-accent">Mais</span>Escola
           </span>
         )}
@@ -144,7 +157,7 @@ export default function Sidebar({ isAdmin }: { isAdmin: boolean }) {
         {sections.map((section) => (
           <div key={section.title} className="mb-5">
             {!collapsed && (
-              <p className="mb-1.5 px-2 font-mono text-[10px] font-semibold uppercase tracking-[0.15em] text-zinc-500">
+              <p className="mb-1.5 px-2 font-mono text-[10px] font-semibold uppercase tracking-[0.15em] text-zinc-400">
                 {section.title}
               </p>
             )}
@@ -156,16 +169,25 @@ export default function Sidebar({ isAdmin }: { isAdmin: boolean }) {
                     <Link
                       href={item.href}
                       title={collapsed ? item.label : undefined}
-                      className={`flex items-center gap-3 rounded-lg px-2.5 py-2 text-sm transition-colors ${
+                      aria-current={active ? "page" : undefined}
+                      className={`group relative flex items-center gap-3 rounded-lg px-2.5 py-2 text-sm transition-colors ${
                         collapsed ? "justify-center" : ""
                       } ${
                         active
-                          ? "bg-brand-primary/15 text-white"
+                          ? "bg-gradient-to-r from-brand-primary/25 to-transparent text-white"
                           : "text-brand-text-secondary hover:bg-white/5 hover:text-white"
                       }`}
                     >
+                      {active && (
+                        <span
+                          aria-hidden="true"
+                          className="absolute left-0 top-1/2 h-4 w-0.5 -translate-y-1/2 rounded-full bg-brand-accent shadow-[0_0_12px_rgb(59_130_246/0.9)]"
+                        />
+                      )}
                       {item.icon}
-                      {!collapsed && <span className="truncate">{item.label}</span>}
+                      {!collapsed && (
+                        <span className="truncate">{item.label}</span>
+                      )}
                     </Link>
                   </li>
                 );

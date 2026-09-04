@@ -1,35 +1,30 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAuthToken } from "@/lib/auth-cookies";
-import { updateRole, deleteRole } from "@/lib/api";
+import { getAuthToken, getCsrfToken } from "@/lib/auth-cookies";
+import { ApiError, deleteRole, updateRole } from "@/lib/api";
 
 export async function PUT(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
-  const token = await getAuthToken();
-  if (!token) {
+  const [token, csrf] = await Promise.all([getAuthToken(), getCsrfToken()]);
+  if (!token || !csrf) {
     return NextResponse.json({ error: "Não autenticado" }, { status: 401 });
   }
   const { id } = await params;
   const body = await req.json().catch(() => null);
-  if (!body?.code || !body?.name) {
-    return NextResponse.json(
-      { error: "Código e nome são obrigatórios" },
-      { status: 400 },
-    );
+  if (!body?.name) {
+    return NextResponse.json({ error: "Nome é obrigatório" }, { status: 400 });
   }
   try {
-    const role = await updateRole(token, id, {
-      code: body.code,
+    await updateRole(token, csrf, id, {
       name: body.name,
       description: body.description,
-      permissions: body.permissions,
     });
-    return NextResponse.json(role);
-  } catch {
+    return NextResponse.json({ ok: true });
+  } catch (error) {
     return NextResponse.json(
-      { error: "Falha ao atualizar papel." },
-      { status: 500 },
+      { error: error instanceof ApiError ? error.message : "Falha ao atualizar papel." },
+      { status: error instanceof ApiError ? error.status : 500 },
     );
   }
 }
@@ -38,18 +33,18 @@ export async function DELETE(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
-  const token = await getAuthToken();
-  if (!token) {
+  const [token, csrf] = await Promise.all([getAuthToken(), getCsrfToken()]);
+  if (!token || !csrf) {
     return NextResponse.json({ error: "Não autenticado" }, { status: 401 });
   }
   const { id } = await params;
   try {
-    await deleteRole(token, id);
+    await deleteRole(token, csrf, id);
     return NextResponse.json({ ok: true });
-  } catch {
+  } catch (error) {
     return NextResponse.json(
-      { error: "Falha ao excluir papel." },
-      { status: 500 },
+      { error: error instanceof ApiError ? error.message : "Falha ao excluir papel." },
+      { status: error instanceof ApiError ? error.status : 500 },
     );
   }
 }

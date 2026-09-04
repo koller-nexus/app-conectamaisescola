@@ -30,6 +30,7 @@ export default function UserModal({
   const [me, setMe] = useState<MeResponse>(initialMe);
   const [loaded, setLoaded] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
+  const [loggingOutAll, setLoggingOutAll] = useState(false);
 
   useEffect(() => {
     if (!open) return;
@@ -59,7 +60,19 @@ export default function UserModal({
     router.refresh();
   }
 
-  const statusActive = me.user.status === "active";
+  async function handleLogoutAll() {
+    setLoggingOutAll(true);
+    try {
+      await fetch("/api/auth/logout-all", { method: "POST" });
+    } catch {
+      // proceed even if the remote revoke fails
+    }
+    await onLogout();
+    router.push("/login");
+    router.refresh();
+  }
+
+  const statusActive = me.user.active;
 
   const content = (
     <div
@@ -74,16 +87,20 @@ export default function UserModal({
         onClick={onClose}
         className="absolute inset-0 cursor-default bg-black/60 backdrop-blur-sm"
       />
-      <div className="relative w-full max-w-sm rounded-lg border border-brand-border bg-brand-surface p-6 shadow-2xl shadow-black/50 animate-rise">
+      <div className="card relative w-full max-w-sm p-6 shadow-2xl shadow-black/50 animate-rise">
+        <span
+          aria-hidden="true"
+          className="absolute left-6 right-6 top-0 h-px bg-gradient-to-r from-transparent via-brand-accent/80 to-transparent"
+        />
         <div className="flex items-start justify-between">
-          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-brand-primary text-lg font-semibold text-white">
+          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-brand-primary to-brand-accent text-lg font-semibold text-white shadow-glow">
             {initialsOf(me.user.email)}
           </div>
           <button
             type="button"
             onClick={onClose}
             aria-label="Fechar modal"
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-brand-text-secondary transition-colors hover:bg-white/5 hover:text-white"
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-brand-text-secondary transition-colors hover:bg-white/5 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent"
           >
             <svg
               viewBox="0 0 24 24"
@@ -125,7 +142,7 @@ export default function UserModal({
                 Email verificado
               </dt>
               <dd className="mt-1 text-sm font-medium text-white">
-                {me.user.emailVerified ? "Sim" : "Não"}
+                {me.user.email_verified_at ? "Sim" : "Não"}
               </dd>
             </div>
             <div className="flex-1 rounded-lg border border-brand-border bg-black/40 p-3.5">
@@ -139,7 +156,7 @@ export default function UserModal({
                   }`}
                   aria-hidden="true"
                 />
-                {statusActive ? "Ativo" : me.user.status}
+                {statusActive ? "Ativo" : "Inativo"}
               </dd>
             </div>
           </div>
@@ -155,7 +172,7 @@ export default function UserModal({
                 {me.permissions.map((p) => (
                   <span
                     key={p.id}
-                    className="rounded-md border border-brand-border bg-black/40 px-2 py-0.5 font-mono text-[11px] text-brand-text-secondary"
+                    className="rounded-full border border-brand-border bg-black/40 px-2.5 py-1 font-mono text-[11px] text-brand-text-secondary"
                   >
                     {p.name}
                   </span>
@@ -166,9 +183,18 @@ export default function UserModal({
 
           <button
             type="button"
+            onClick={handleLogoutAll}
+            disabled={loggingOutAll}
+            className="mt-2 flex h-10 w-full items-center justify-center gap-2 rounded-lg border border-brand-border px-4 text-sm text-brand-text-secondary transition-colors hover:bg-white/5 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent disabled:opacity-60"
+          >
+            {loggingOutAll ? "Encerrando…" : "Sair de todos os dispositivos"}
+          </button>
+
+          <button
+            type="button"
             onClick={handleLogout}
             disabled={loggingOut}
-            className="mt-2 flex h-10 w-full items-center justify-center gap-2 rounded-lg border border-red-500/40 bg-red-500/10 px-4 text-sm font-semibold text-red-300 transition-colors hover:bg-red-500/20 disabled:opacity-60"
+            className="mt-2 flex h-10 w-full items-center justify-center gap-2 rounded-lg border border-red-500/40 bg-red-500/10 px-4 text-sm font-semibold text-red-300 transition-colors hover:bg-red-500/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400 disabled:opacity-60"
           >
             {loggingOut ? "Saindo…" : "Sair da conta"}
           </button>

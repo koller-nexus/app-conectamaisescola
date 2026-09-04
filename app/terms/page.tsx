@@ -33,8 +33,8 @@ export default function TermsPage() {
         <p className="mb-3 font-mono text-xs font-semibold uppercase tracking-[0.2em] text-brand-accent">
           ConectaMaisEscola
         </p>
-        <h1 className="text-3xl font-medium leading-tight tracking-tight text-white">
-          Termos de Serviço
+        <h1 className="text-3xl font-semibold leading-tight tracking-tight text-white">
+          Termos de <span className="text-gradient">Serviço</span>
         </h1>
         <p className="mt-3 text-sm leading-relaxed text-brand-text-secondary">
           Última atualização: 19 de agosto de 2026
@@ -42,7 +42,7 @@ export default function TermsPage() {
 
         <div className="mt-10 flex flex-col gap-10">
           <section>
-            <h2 className="font-mono text-sm font-semibold uppercase tracking-wide text-white">
+            <h2 className="flex items-center gap-2.5 border-l-2 border-brand-accent/60 pl-3 font-mono text-sm font-semibold uppercase tracking-wide text-white">
               1. Aceitação dos termos
             </h2>
             <p className="mt-3 text-sm leading-relaxed text-brand-text-secondary">
@@ -54,7 +54,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="font-mono text-sm font-semibold uppercase tracking-wide text-white">
+            <h2 className="flex items-center gap-2.5 border-l-2 border-brand-accent/60 pl-3 font-mono text-sm font-semibold uppercase tracking-wide text-white">
               2. Acesso e uso
             </h2>
             <p className="mt-3 text-sm leading-relaxed text-brand-text-secondary">
@@ -67,7 +67,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="font-mono text-sm font-semibold uppercase tracking-wide text-white">
+            <h2 className="flex items-center gap-2.5 border-l-2 border-brand-accent/60 pl-3 font-mono text-sm font-semibold uppercase tracking-wide text-white">
               3. Uso dos dados escolares
             </h2>
             <p className="mt-3 text-sm leading-relaxed text-brand-text-secondary">
@@ -80,7 +80,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="font-mono text-sm font-semibold uppercase tracking-wide text-white">
+            <h2 className="flex items-center gap-2.5 border-l-2 border-brand-accent/60 pl-3 font-mono text-sm font-semibold uppercase tracking-wide text-white">
               4. Conduta do usuário
             </h2>
             <p className="mt-3 text-sm leading-relaxed text-brand-text-secondary">
@@ -92,7 +92,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="font-mono text-sm font-semibold uppercase tracking-wide text-white">
+            <h2 className="flex items-center gap-2.5 border-l-2 border-brand-accent/60 pl-3 font-mono text-sm font-semibold uppercase tracking-wide text-white">
               5. Encerramento
             </h2>
             <p className="mt-3 text-sm leading-relaxed text-brand-text-secondary">
@@ -104,7 +104,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="font-mono text-sm font-semibold uppercase tracking-wide text-white">
+            <h2 className="flex items-center gap-2.5 border-l-2 border-brand-accent/60 pl-3 font-mono text-sm font-semibold uppercase tracking-wide text-white">
               6. Contato
             </h2>
             <p className="mt-3 text-sm leading-relaxed text-brand-text-secondary">

@@ -27,12 +27,14 @@ Load the matching skill with the `skill` tool at the START of every session / wh
 - `design-system` — design tokens (primitive→semantic→component), CSS vars, component specs
 - `slides` — strategic HTML presentations (Chart.js, design tokens)
 - `ui-styling` — shadcn/ui + Tailwind UIs, accessible components, dark mode
-- `ui-ux-pro-max` — UI/UX intelligence for web/mobile/desktop (79 styles, 192 palettes, 74 font pairings)
+- `ui-ux-pro-max` — UI/UX intelligence for web/mobile/desktop; searchable data: 79 styles (50 active), 192 palettes, 74 font pairings, 119 UX guidelines, 105 icons, 25 chart types, 22 stacks
 
-## `.agents/skills/` (Vercel & quality)
+## `.agents/skills/` (design, Vercel & quality)
 
+- Design & UI (mirror of `.opencode/skills/`): `banner-design`, `brand`, `design`, `design-system`, `slides`, `ui-styling`, `ui-ux-pro-max`
 - `deploy-to-vercel` — deploy to Vercel
 - `frontend-design` — production-grade frontend interfaces, avoids generic AI aesthetics
+- `test` — run React core tests (source/www/stable/experimental channels)
 - `vercel-cli-with-tokens` — Vercel CLI with access tokens
 - `vercel-composition-patterns` — React composition, compound components, render props
 - `vercel-optimize` — Vercel cost/performance optimization
@@ -41,5 +43,3 @@ Load the matching skill with the `skill` tool at the START of every session / wh
 - `vercel-react-view-transitions` — View Transition API animations
 - `web-design-guidelines` — review UI against Web Interface Guidelines
 - `writing-guidelines` — review docs/prose against writing handbook
-
-Also available: `deploy-to-vercel` and `vercel-cli-with-tokens` for Vercel deploy workflows.

@@ -37,18 +37,40 @@ export default function ForgotPasswordPage() {
       <div aria-hidden="true" className="pointer-events-none absolute inset-0">
         <div className="absolute -top-48 left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-brand-primary/25 blur-3xl" />
         <div className="absolute -bottom-56 -right-40 h-[440px] w-[440px] rounded-full bg-brand-accent/15 blur-3xl" />
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:48px_48px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_40%,black,transparent)]" />
+        <div className="absolute inset-0 bg-grid [mask-image:radial-gradient(ellipse_60%_50%_at_50%_40%,black,transparent)]" />
+        <div className="absolute inset-0 opacity-[0.05] bg-noise" />
       </div>
 
       <div className="relative w-full max-w-sm">
         <div className="mb-8 flex flex-col items-center text-center animate-rise">
+          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-lg bg-gradient-to-br from-brand-primary to-brand-accent shadow-glow">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              className="h-7 w-7 text-white"
+              aria-hidden="true"
+            >
+              <path
+                d="M4 6.5c0-1.1.9-2 2-2h12a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H8.5L4 21.5V6.5Z"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M8 10.5h8M8 13.5h5"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+              />
+            </svg>
+          </div>
           <p className="mb-3 font-mono text-xs font-semibold uppercase tracking-[0.2em] text-brand-accent">
             ConectaMaisEscola
           </p>
-          <h1 className="text-3xl font-medium leading-tight tracking-tight text-white">
-            Recuperar senha
+          <h1 className="text-3xl font-semibold leading-tight tracking-tight text-white">
+            Recuperar <span className="text-gradient">senha</span>
           </h1>
-          <p className="mt-3 text-sm leading-relaxed text-brand-text-secondary">
+          <p className="mt-3 max-w-[17rem] text-sm leading-relaxed text-brand-text-secondary">
             Informe o email da sua conta para receber as instruções de
             recuperação.
           </p>
@@ -57,7 +79,7 @@ export default function ForgotPasswordPage() {
         <form
           onSubmit={handleSubmit}
           noValidate
-          className="rounded-lg border border-brand-border bg-brand-surface p-6 shadow-2xl shadow-black/40 animate-rise"
+          className="card card-accent p-6 animate-rise"
           style={{ animationDelay: "80ms" }}
         >
           <div className="flex flex-col gap-1.5" suppressHydrationWarning>
@@ -67,17 +89,38 @@ export default function ForgotPasswordPage() {
             >
               Email
             </label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              autoComplete="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              disabled={loading || sent}
-              className="h-11 w-full rounded-lg border border-brand-border bg-black/40 px-3.5 text-sm text-white placeholder:text-zinc-600 transition-colors focus:border-brand-accent focus:outline-none focus:ring-2 focus:ring-brand-accent/30 disabled:opacity-60"
-              placeholder="voce@exemplo.com"
-            />
+            <div className="relative">
+              <span
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-y-0 left-0 flex w-11 items-center justify-center text-zinc-500"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  className="h-4 w-4"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M4 6.5c0-1.1.9-2 2-2h12a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-9ZM4 7l8 5.5L20 7"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </span>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={loading || sent}
+                className="input pl-11"
+                placeholder="voce@exemplo.com"
+              />
+            </div>
           </div>
 
           {error ? (
@@ -99,7 +142,7 @@ export default function ForgotPasswordPage() {
           <button
             type="submit"
             disabled={loading || sent}
-            className="mt-6 flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-brand-primary px-4 text-sm font-semibold text-white shadow-lg shadow-brand-primary/30 transition-all hover:-translate-y-0.5 hover:bg-brand-primary-hover hover:shadow-brand-primary/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent focus-visible:ring-offset-2 focus-visible:ring-offset-brand-surface disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0"
+            className="mt-6 flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-b from-brand-accent to-brand-primary px-4 text-sm font-semibold text-white shadow-glow transition-all hover:-translate-y-0.5 hover:brightness-110 hover:shadow-glow-strong active:translate-y-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent focus-visible:ring-offset-2 focus-visible:ring-offset-brand-surface disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0"
           >
             {loading ? "Enviando…" : "Enviar instruções"}
           </button>
