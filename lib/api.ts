@@ -1,7 +1,8 @@
-const API_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
+const API_URL = process.env.NEXT_PUBLIC_API_URL
+  ? process.env.NEXT_API_URL
+  : 'http://localhost:3000';
 
-import type { LoginResponse } from "@/lib/auth";
+import type { LoginResponse } from '@/lib/auth';
 
 export interface Permission {
   id: string;
@@ -77,7 +78,7 @@ export class ApiError extends Error {
     readonly code?: string,
   ) {
     super(message);
-    this.name = "ApiError";
+    this.name = 'ApiError';
   }
 }
 
@@ -92,11 +93,13 @@ async function request<T>(
   path: string,
   options: RequestOptions = {},
 ): Promise<T> {
-  const { method = "GET", body, token, csrf } = options;
-  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  const { method = 'GET', body, token, csrf } = options;
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  };
   if (token) headers.Authorization = `Bearer ${token}`;
   if (csrf) {
-    headers["X-CSRF-Token"] = csrf;
+    headers['X-CSRF-Token'] = csrf;
     headers.Cookie = `XSRF-TOKEN=${csrf}`;
   }
 
@@ -108,17 +111,14 @@ async function request<T>(
       body: body !== undefined ? JSON.stringify(body) : undefined,
     });
   } catch {
-    throw new ApiError("Não foi possível conectar ao servidor.", 502);
+    throw new ApiError('Não foi possível conectar ao servidor.', 502);
   }
 
   if (!response.ok) {
     const data = (await response.json().catch(() => null)) as {
       error?: string;
     } | null;
-    throw new ApiError(
-      data?.error ?? "Falha na requisição.",
-      response.status,
-    );
+    throw new ApiError(data?.error ?? 'Falha na requisição.', response.status);
   }
 
   if (response.status === 204 || response.status === 202) {
@@ -134,12 +134,12 @@ export async function backendLogin(
   let response: Response;
   try {
     response = await fetch(`${API_URL}/api/v1/auth/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
     });
   } catch {
-    throw new ApiError("Não foi possível conectar ao servidor.", 502);
+    throw new ApiError('Não foi possível conectar ao servidor.', 502);
   }
   if (!response.ok) {
     const data = (await response.json().catch(() => null)) as {
@@ -147,7 +147,7 @@ export async function backendLogin(
       code?: string;
     } | null;
     throw new ApiError(
-      data?.error ?? "Falha na autenticação.",
+      data?.error ?? 'Falha na autenticação.',
       response.status,
       data?.code,
     );
@@ -157,13 +157,13 @@ export async function backendLogin(
 
 export async function backendForgotPassword(email: string): Promise<void> {
   try {
-    await request<void>("/auth/forgot-password", {
-      method: "POST",
+    await request<void>('/auth/forgot-password', {
+      method: 'POST',
       body: { email },
     });
   } catch (error) {
     if (error instanceof ApiError) throw error;
-    throw new ApiError("Falha ao solicitar recuperação.", 500);
+    throw new ApiError('Falha ao solicitar recuperação.', 500);
   }
 }
 
@@ -172,8 +172,8 @@ export async function revokeSession(
   refreshToken: string,
   csrf: string,
 ): Promise<void> {
-  await request<void>("/auth/logout", {
-    method: "POST",
+  await request<void>('/auth/logout', {
+    method: 'POST',
     body: { refresh_token: refreshToken },
     token,
     csrf,
@@ -181,60 +181,59 @@ export async function revokeSession(
 }
 
 const MOCK_USER: User = {
-  id: "usr-001",
-  name: "Admin",
-  last_name: "Escola",
-  email: "admin@escola.com",
+  id: 'usr-001',
+  name: 'Admin',
+  last_name: 'Escola',
+  email: 'admin@escola.com',
   active: true,
   email_verified_at: null,
-  created_at: "",
-  updated_at: "",
+  created_at: '',
+  updated_at: '',
 };
 
 const MOCK_ME: MeResponse = {
   user: MOCK_USER,
   roles: [
     {
-      id: "role-admin",
-      name: "Administrador",
-      description: "Acesso total",
-      created_at: "",
-      updated_at: "",
+      id: 'role-admin',
+      name: 'Administrador',
+      description: 'Acesso total',
+      created_at: '',
+      updated_at: '',
     },
   ],
   permissions: [],
 };
 
-export async function getCurrentUser(token?: string | null): Promise<MeResponse> {
+export async function getCurrentUser(
+  token?: string | null,
+): Promise<MeResponse> {
   if (!token) return MOCK_ME;
-  return request<MeResponse>("/auth/me", { token });
+  return request<MeResponse>('/auth/me', { token });
 }
 
 export function isAdmin(me: MeResponse): boolean {
-  return me.roles.some((r) => r.name.toLowerCase().includes("admin"));
+  return me.roles.some((r) => r.name.toLowerCase().includes('admin'));
 }
 
 const MOCK_ROLES: Role[] = [
   {
-    id: "role-admin",
-    name: "Administrador",
-    description: "Acesso total",
-    created_at: "",
-    updated_at: "",
+    id: 'role-admin',
+    name: 'Administrador',
+    description: 'Acesso total',
+    created_at: '',
+    updated_at: '',
   },
   {
-    id: "role-director",
-    name: "Diretor",
-    description: "Opera unidades escolares atribuídas",
-    created_at: "",
-    updated_at: "",
+    id: 'role-director',
+    name: 'Diretor',
+    description: 'Opera unidades escolares atribuídas',
+    created_at: '',
+    updated_at: '',
   },
 ];
 
-export async function getRole(
-  token: string,
-  id: string,
-): Promise<Role> {
+export async function getRole(token: string, id: string): Promise<Role> {
   return request<Role>(`/roles/${id}`, { token });
 }
 
@@ -262,7 +261,7 @@ export async function createRole(
   csrf: string,
   input: RoleInput,
 ): Promise<Role> {
-  return request<Role>("/roles", { method: "POST", body: input, token, csrf });
+  return request<Role>('/roles', { method: 'POST', body: input, token, csrf });
 }
 
 export async function updateRole(
@@ -272,7 +271,7 @@ export async function updateRole(
   input: RoleInput,
 ): Promise<void> {
   await request<void>(`/roles/${id}`, {
-    method: "PUT",
+    method: 'PUT',
     body: input,
     token,
     csrf,
@@ -284,14 +283,38 @@ export async function deleteRole(
   csrf: string,
   id: string,
 ): Promise<void> {
-  await request<void>(`/roles/${id}`, { method: "DELETE", token, csrf });
+  await request<void>(`/roles/${id}`, { method: 'DELETE', token, csrf });
 }
 
 const MOCK_PERMISSIONS: Permission[] = [
-  { id: "perm-1", name: "users:read", resource: "users", action: "read", created_at: "" },
-  { id: "perm-2", name: "users:create", resource: "users", action: "create", created_at: "" },
-  { id: "perm-3", name: "roles:read", resource: "roles", action: "read", created_at: "" },
-  { id: "perm-4", name: "roles:create", resource: "roles", action: "create", created_at: "" },
+  {
+    id: 'perm-1',
+    name: 'users:read',
+    resource: 'users',
+    action: 'read',
+    created_at: '',
+  },
+  {
+    id: 'perm-2',
+    name: 'users:create',
+    resource: 'users',
+    action: 'create',
+    created_at: '',
+  },
+  {
+    id: 'perm-3',
+    name: 'roles:read',
+    resource: 'roles',
+    action: 'read',
+    created_at: '',
+  },
+  {
+    id: 'perm-4',
+    name: 'roles:create',
+    resource: 'roles',
+    action: 'create',
+    created_at: '',
+  },
 ];
 
 export async function getPermission(
@@ -326,8 +349,8 @@ export async function createPermission(
   csrf: string,
   input: PermissionInput,
 ): Promise<Permission> {
-  return request<Permission>("/permissions", {
-    method: "POST",
+  return request<Permission>('/permissions', {
+    method: 'POST',
     body: input,
     token,
     csrf,
@@ -341,7 +364,7 @@ export async function updatePermission(
   input: PermissionInput,
 ): Promise<void> {
   await request<void>(`/permissions/${id}`, {
-    method: "PUT",
+    method: 'PUT',
     body: input,
     token,
     csrf,
@@ -353,15 +376,12 @@ export async function deletePermission(
   csrf: string,
   id: string,
 ): Promise<void> {
-  await request<void>(`/permissions/${id}`, { method: "DELETE", token, csrf });
+  await request<void>(`/permissions/${id}`, { method: 'DELETE', token, csrf });
 }
 
 const MOCK_USERS: User[] = [MOCK_USER];
 
-export async function getUser(
-  token: string,
-  id: string,
-): Promise<User> {
+export async function getUser(token: string, id: string): Promise<User> {
   return request<User>(`/users/${id}`, { token });
 }
 
@@ -389,7 +409,7 @@ export async function createUser(
   csrf: string,
   input: UserInput,
 ): Promise<User> {
-  return request<User>("/users", { method: "POST", body: input, token, csrf });
+  return request<User>('/users', { method: 'POST', body: input, token, csrf });
 }
 
 export async function updateUser(
@@ -399,7 +419,7 @@ export async function updateUser(
   input: UserUpdateInput,
 ): Promise<void> {
   await request<void>(`/users/${id}`, {
-    method: "PUT",
+    method: 'PUT',
     body: input,
     token,
     csrf,
@@ -411,7 +431,7 @@ export async function deleteUser(
   csrf: string,
   id: string,
 ): Promise<void> {
-  await request<void>(`/users/${id}`, { method: "DELETE", token, csrf });
+  await request<void>(`/users/${id}`, { method: 'DELETE', token, csrf });
 }
 
 export interface Invite {
@@ -444,7 +464,13 @@ export async function getInvites(
   pageSize = 20,
 ): Promise<Page<Invite>> {
   if (!token) {
-    return { data: [], page, page_size: pageSize, total_items: 0, total_pages: 0 };
+    return {
+      data: [],
+      page,
+      page_size: pageSize,
+      total_items: 0,
+      total_pages: 0,
+    };
   }
   return request<Page<Invite>>(`/invites?page=${page}&page_size=${pageSize}`, {
     token,
@@ -456,8 +482,8 @@ export async function createInvite(
   csrf: string,
   input: { email: string; role_id: string },
 ): Promise<InviteCreated> {
-  return request<InviteCreated>("/invites", {
-    method: "POST",
+  return request<InviteCreated>('/invites', {
+    method: 'POST',
     body: input,
     token,
     csrf,
@@ -473,7 +499,7 @@ export async function acceptInvite(
   password: string,
 ): Promise<{ user: User }> {
   return request<{ user: User }>(`/invites/${token}/accept`, {
-    method: "POST",
+    method: 'POST',
     body: { password },
   });
 }
@@ -482,30 +508,36 @@ export async function backendResetPassword(
   token: string,
   password: string,
 ): Promise<void> {
-  await request<void>("/auth/reset-password", {
-    method: "POST",
+  await request<void>('/auth/reset-password', {
+    method: 'POST',
     body: { token, password },
   });
 }
 
 export async function backendVerifyEmail(token: string): Promise<void> {
-  await request<void>("/auth/verify-email", { method: "POST", body: { token } });
+  await request<void>('/auth/verify-email', {
+    method: 'POST',
+    body: { token },
+  });
 }
 
 export async function revokeAllSessions(
   token: string,
   csrf: string,
 ): Promise<void> {
-  await request<void>("/auth/logout-all", { method: "POST", token, csrf });
+  await request<void>('/auth/logout-all', { method: 'POST', token, csrf });
 }
 
 export async function getUserRoles(
   token: string,
   userId: string,
 ): Promise<Role[]> {
-  const res = await request<Page<Role>>(`/users/${userId}/roles?page_size=100`, {
-    token,
-  });
+  const res = await request<Page<Role>>(
+    `/users/${userId}/roles?page_size=100`,
+    {
+      token,
+    },
+  );
   return res.data;
 }
 
@@ -516,7 +548,7 @@ export async function assignUserRoles(
   roleIds: string[],
 ): Promise<void> {
   await request<void>(`/users/${userId}/roles`, {
-    method: "POST",
+    method: 'POST',
     body: { role_ids: roleIds },
     token,
     csrf,
@@ -530,7 +562,7 @@ export async function removeUserRole(
   roleId: string,
 ): Promise<void> {
   await request<void>(`/users/${userId}/roles/${roleId}`, {
-    method: "DELETE",
+    method: 'DELETE',
     token,
     csrf,
   });
@@ -554,7 +586,7 @@ export async function assignRolePermissions(
   permissionIds: string[],
 ): Promise<void> {
   await request<void>(`/roles/${roleId}/permissions`, {
-    method: "POST",
+    method: 'POST',
     body: { permission_ids: permissionIds },
     token,
     csrf,
@@ -568,7 +600,7 @@ export async function removeRolePermission(
   permissionId: string,
 ): Promise<void> {
   await request<void>(`/roles/${roleId}/permissions/${permissionId}`, {
-    method: "DELETE",
+    method: 'DELETE',
     token,
     csrf,
   });
