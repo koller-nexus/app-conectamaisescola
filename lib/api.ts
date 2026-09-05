@@ -231,6 +231,13 @@ const MOCK_ROLES: Role[] = [
   },
 ];
 
+export async function getRole(
+  token: string,
+  id: string,
+): Promise<Role> {
+  return request<Role>(`/roles/${id}`, { token });
+}
+
 export async function getRoles(
   token?: string | null,
   page = 1,
@@ -286,6 +293,13 @@ const MOCK_PERMISSIONS: Permission[] = [
   { id: "perm-3", name: "roles:read", resource: "roles", action: "read", created_at: "" },
   { id: "perm-4", name: "roles:create", resource: "roles", action: "create", created_at: "" },
 ];
+
+export async function getPermission(
+  token: string,
+  id: string,
+): Promise<Permission> {
+  return request<Permission>(`/permissions/${id}`, { token });
+}
 
 export async function getPermissions(
   token?: string | null,
@@ -343,6 +357,13 @@ export async function deletePermission(
 }
 
 const MOCK_USERS: User[] = [MOCK_USER];
+
+export async function getUser(
+  token: string,
+  id: string,
+): Promise<User> {
+  return request<User>(`/users/${id}`, { token });
+}
 
 export async function getUsers(
   token?: string | null,

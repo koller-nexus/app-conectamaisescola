@@ -6,7 +6,7 @@ import Pagination from "../_components/pagination";
 import type { Invite, Page, Role } from "@/lib/api";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 10;
 
 interface InviteStatus {
   label: string;

@@ -1,6 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthToken, getCsrfToken } from "@/lib/auth-cookies";
-import { ApiError, deleteUser, updateUser } from "@/lib/api";
+import { ApiError, deleteUser, getUser, updateUser } from "@/lib/api";
+
+export async function GET(
+  _req: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  const token = await getAuthToken();
+  if (!token) {
+    return NextResponse.json({ error: "Não autenticado" }, { status: 401 });
+  }
+  const { id } = await params;
+  try {
+    const user = await getUser(token, id);
+    return NextResponse.json(user);
+  } catch (error) {
+    return NextResponse.json(
+      { error: error instanceof ApiError ? error.message : "Falha ao carregar usuário." },
+      { status: error instanceof ApiError ? error.status : 500 },
+    );
+  }
+}
 
 export async function PUT(
   req: NextRequest,
