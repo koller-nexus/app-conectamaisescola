@@ -1,16 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAuthToken } from "@/lib/auth-cookies";
-import { getPermissions, createPermission } from "@/lib/api";
+import { getAuthToken, getCsrfToken } from "@/lib/auth-cookies";
+import { ApiError, createPermission, getPermissions } from "@/lib/api";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   const token = await getAuthToken();
-  const permissions = await getPermissions(token);
-  return NextResponse.json(permissions);
+  const page = Number(req.nextUrl.searchParams.get("page") ?? 1);
+  const pageSize = Number(req.nextUrl.searchParams.get("page_size") ?? 20);
+  try {
+    const permissions = await getPermissions(token, page, pageSize);
+    return NextResponse.json(permissions);
+  } catch (error) {
+    return NextResponse.json(
+      { error: error instanceof ApiError ? error.message : "Falha ao carregar permissões." },
+      { status: error instanceof ApiError ? error.status : 500 },
+    );
+  }
 }
 
 export async function POST(req: NextRequest) {
-  const token = await getAuthToken();
-  if (!token) {
+  const [token, csrf] = await Promise.all([getAuthToken(), getCsrfToken()]);
+  if (!token || !csrf) {
     return NextResponse.json({ error: "Não autenticado" }, { status: 401 });
   }
   const body = await req.json().catch(() => null);
@@ -21,17 +30,16 @@ export async function POST(req: NextRequest) {
     );
   }
   try {
-    const permission = await createPermission(token, {
+    const permission = await createPermission(token, csrf, {
       name: body.name,
       resource: body.resource,
       action: body.action,
-      description: body.description,
     });
-    return NextResponse.json(permission);
-  } catch {
+    return NextResponse.json(permission, { status: 201 });
+  } catch (error) {
     return NextResponse.json(
-      { error: "Falha ao criar permissão." },
-      { status: 500 },
+      { error: error instanceof ApiError ? error.message : "Falha ao criar permissão." },
+      { status: error instanceof ApiError ? error.status : 500 },
     );
   }
 }

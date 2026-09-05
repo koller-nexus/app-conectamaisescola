@@ -29,6 +29,44 @@ function validate(email: string, password: string): FieldErrors {
   return errors;
 }
 
+function MailIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      className="h-4 w-4"
+      aria-hidden="true"
+    >
+      <path
+        d="M4 6.5c0-1.1.9-2 2-2h12a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-9ZM4 7l8 5.5L20 7"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function LockIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      className="h-4 w-4"
+      aria-hidden="true"
+    >
+      <path
+        d="M7 11V8a5 5 0 0 1 10 0v3M6 11h12a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1Z"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -52,7 +90,7 @@ export default function LoginPage() {
     setLoading(true);
     try {
       const data = await login(trimmedEmail, password);
-      await persistSession(data.accessToken);
+      await persistSession(data);
       router.push("/dashboard");
     } catch (err) {
       setError(
@@ -66,29 +104,23 @@ export default function LoginPage() {
   const labelClass =
     "font-mono text-xs font-semibold uppercase tracking-wide text-brand-text-secondary";
 
-  const inputClass = (hasError: boolean) =>
-    `h-11 w-full rounded-lg border bg-black/40 px-3.5 text-sm text-white placeholder:text-zinc-600 transition-colors focus:outline-none focus:ring-2 disabled:opacity-60 ${
-      hasError
-        ? "border-red-500/70 focus:border-red-400 focus:ring-red-500/30"
-        : "border-brand-border focus:border-brand-accent focus:ring-brand-accent/30"
-    }`;
-
   return (
     <main className="relative flex min-h-full flex-1 items-center justify-center overflow-hidden bg-background px-4 py-12">
       <div aria-hidden="true" className="pointer-events-none absolute inset-0">
         <div className="absolute -top-48 left-1/2 h-[560px] w-[560px] -translate-x-1/2 rounded-full bg-brand-primary/25 blur-3xl" />
         <div className="absolute -bottom-56 -left-40 h-[460px] w-[460px] rounded-full bg-brand-accent/15 blur-3xl" />
         <div className="absolute -right-44 top-1/3 h-[420px] w-[420px] rounded-full bg-brand-primary/10 blur-3xl" />
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:48px_48px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_40%,black,transparent)]" />
+        <div className="absolute inset-0 bg-grid [mask-image:radial-gradient(ellipse_60%_50%_at_50%_40%,black,transparent)]" />
+        <div className="absolute inset-0 opacity-[0.05] bg-noise" />
       </div>
 
       <div className="relative w-full max-w-sm">
         <div className="mb-8 flex flex-col items-center text-center animate-rise">
-          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-lg border border-brand-border bg-brand-surface shadow-lg shadow-black/40">
+          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-lg bg-gradient-to-br from-brand-primary to-brand-accent shadow-glow">
             <svg
               viewBox="0 0 24 24"
               fill="none"
-              className="h-7 w-7 text-brand-accent"
+              className="h-7 w-7 text-white"
               aria-hidden="true"
             >
               <path
@@ -98,7 +130,7 @@ export default function LoginPage() {
                 strokeLinejoin="round"
               />
               <path
-                d="M8 9.5h8M8 12.5h5"
+                d="M8 10.5h8M8 13.5h5"
                 stroke="currentColor"
                 strokeWidth="1.8"
                 strokeLinecap="round"
@@ -108,19 +140,18 @@ export default function LoginPage() {
           <p className="mb-3 font-mono text-xs font-semibold uppercase tracking-[0.2em] text-brand-accent">
             ConectaMaisEscola
           </p>
-          <h1 className="text-3xl font-medium leading-tight tracking-tight text-white">
-            Acesse a plataforma de gestão escolar
+          <h1 className="text-3xl font-semibold leading-tight tracking-tight text-white">
+            Acesse a plataforma de <span className="text-gradient">gestão escolar</span>
           </h1>
-          <p className="mt-3 text-sm leading-relaxed text-brand-text-secondary">
-            Entre com sua conta institucional para gerenciar a rotina da
-            escola.
+          <p className="mt-3 max-w-[16rem] text-sm leading-relaxed text-brand-text-secondary">
+            Entre com sua conta institucional para gerenciar a rotina da escola.
           </p>
         </div>
 
         <form
           onSubmit={handleSubmit}
           noValidate
-          className="rounded-lg border border-brand-border bg-brand-surface p-6 shadow-2xl shadow-black/40 animate-rise"
+          className="card card-accent p-6 animate-rise"
           style={{ animationDelay: "80ms" }}
         >
           <div className="flex flex-col gap-5">
@@ -128,26 +159,34 @@ export default function LoginPage() {
               <label htmlFor="email" className={labelClass}>
                 Email profissional
               </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                  if (fieldErrors.email) {
-                    setFieldErrors((prev) => ({ ...prev, email: undefined }));
+              <div className="relative">
+                <span
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-y-0 left-0 flex w-11 items-center justify-center text-zinc-500"
+                >
+                  <MailIcon />
+                </span>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    if (fieldErrors.email) {
+                      setFieldErrors((prev) => ({ ...prev, email: undefined }));
+                    }
+                  }}
+                  disabled={loading}
+                  aria-invalid={Boolean(fieldErrors.email)}
+                  aria-describedby={
+                    fieldErrors.email ? "email-error" : undefined
                   }
-                }}
-                disabled={loading}
-                aria-invalid={Boolean(fieldErrors.email)}
-                aria-describedby={
-                  fieldErrors.email ? "email-error" : undefined
-                }
-                className={inputClass(Boolean(fieldErrors.email))}
-                placeholder="voce@exemplo.com"
-              />
+                  className="input pl-11"
+                  placeholder="voce@exemplo.com"
+                />
+              </div>
               {fieldErrors.email ? (
                 <p id="email-error" className="text-sm text-brand-error">
                   {fieldErrors.email}
@@ -160,6 +199,12 @@ export default function LoginPage() {
                 Senha
               </label>
               <div className="relative">
+                <span
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-y-0 left-0 flex w-11 items-center justify-center text-zinc-500"
+                >
+                  <LockIcon />
+                </span>
                 <input
                   id="password"
                   name="password"
@@ -180,7 +225,7 @@ export default function LoginPage() {
                   aria-describedby={
                     fieldErrors.password ? "password-error" : undefined
                   }
-                  className={`${inputClass(Boolean(fieldErrors.password))} pr-11`}
+                  className="input pl-11 pr-11"
                   placeholder="••••••••"
                 />
                 <button
@@ -264,7 +309,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="mt-6 flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-brand-primary px-4 text-sm font-semibold text-white shadow-lg shadow-brand-primary/30 transition-all hover:-translate-y-0.5 hover:bg-brand-primary-hover hover:shadow-brand-primary/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent focus-visible:ring-offset-2 focus-visible:ring-offset-brand-surface disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0"
+            className="mt-6 flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-b from-brand-accent to-brand-primary px-4 text-sm font-semibold text-white shadow-glow transition-all hover:-translate-y-0.5 hover:brightness-110 hover:shadow-glow-strong active:translate-y-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent focus-visible:ring-offset-2 focus-visible:ring-offset-brand-surface disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0"
           >
             {loading ? (
               <>
@@ -296,7 +341,7 @@ export default function LoginPage() {
             )}
           </button>
 
-          <p className="mt-5 text-center text-xs leading-relaxed text-zinc-500">
+          <p className="mt-5 text-center text-xs leading-relaxed text-brand-text-secondary">
             Ao continuar, você concorda com os{" "}
             <a
               href="/terms"
@@ -317,7 +362,7 @@ export default function LoginPage() {
 
         <div className="mt-6 flex items-center justify-center gap-2 font-mono text-xs text-brand-text-secondary animate-rise">
           <span
-            className="h-1.5 w-1.5 rounded-full bg-emerald-400"
+            className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse-dot"
             aria-hidden="true"
           />
           Sistema ativo · Roteamento inteligente

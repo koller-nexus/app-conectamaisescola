@@ -1,31 +1,63 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import Link from "next/link";
 import ScreenHeader from "../_components/screen-header";
-import type { Role } from "@/lib/api";
+import DataTable from "../_components/data-table";
+import type { Page, Permission, Role } from "@/lib/api";
 
-interface RoleForm {
-  code: string;
-  name: string;
-  description: string;
-}
-
-const EMPTY_FORM: RoleForm = { code: "", name: "", description: "" };
+const PAGE_SIZE = 10;
 
 export default function RolesClient() {
   const [roles, setRoles] = useState<Role[]>([]);
+  const [permissionsByRole, setPermissionsByRole] = useState<
+    Record<string, Permission[]>
+  >({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [form, setForm] = useState<RoleForm>(EMPTY_FORM);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [saving, setSaving] = useState(false);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalItems, setTotalItems] = useState(0);
+
+  async function fetchRolePermissions(roleId: string) {
+    try {
+      const res = await fetch(`/api/roles/${roleId}/permissions`);
+      if (!res.ok) return;
+      const data = (await res.json()) as Permission[];
+      setPermissionsByRole((prev) => ({ ...prev, [roleId]: data }));
+    } catch {
+      // permissions stay empty on failure
+    }
+  }
+
+  const load = useCallback(async (targetPage: number) => {
+    setError(null);
+    try {
+      const res = await fetch(
+        `/api/roles?page=${targetPage}&page_size=${PAGE_SIZE}`,
+      );
+      if (!res.ok) throw new Error();
+      const data = (await res.json()) as Page<Role>;
+      setRoles(data.data);
+      setTotalPages(data.total_pages);
+      setTotalItems(data.total_items);
+      await Promise.all(data.data.map((r) => fetchRolePermissions(r.id)));
+    } catch {
+      setError("Não foi possível carregar os papéis.");
+    }
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
-    fetch("/api/roles")
+    fetch(`/api/roles?page=1&page_size=${PAGE_SIZE}`)
       .then((res) => (res.ok ? res.json() : Promise.reject(new Error())))
-      .then((data) => {
-        if (!cancelled) setRoles(data as Role[]);
+      .then(async (data) => {
+        if (cancelled) return;
+        const rolePage = data as Page<Role>;
+        setRoles(rolePage.data);
+        setTotalPages(rolePage.total_pages);
+        setTotalItems(rolePage.total_items);
+        await Promise.all(rolePage.data.map((r) => fetchRolePermissions(r.id)));
       })
       .catch(() => {
         if (!cancelled) setError("Não foi possível carregar os papéis.");
@@ -38,76 +70,16 @@ export default function RolesClient() {
     };
   }, []);
 
-  async function load() {
-    setError(null);
-    try {
-      const res = await fetch("/api/roles");
-      if (!res.ok) throw new Error();
-      setRoles(await res.json());
-    } catch {
-      setError("Não foi possível carregar os papéis.");
-    }
+  function changePage(next: number) {
+    setPage(next);
+    void load(next);
   }
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setSaving(true);
-    setError(null);
-    try {
-      const method = editingId ? "PUT" : "POST";
-      const url = editingId ? `/api/roles/${editingId}` : "/api/roles";
-      const res = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-      if (!res.ok) {
-        const data = await res.json().catch(() => null);
-        setError(data?.error ?? "Falha ao salvar papel.");
-        return;
-      }
-      setForm(EMPTY_FORM);
-      setEditingId(null);
-      await load();
-    } catch {
-      setError("Falha ao salvar papel.");
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  async function handleDelete(id: string) {
-    if (!confirm("Excluir este papel?")) return;
-    setError(null);
-    try {
-      const res = await fetch(`/api/roles/${id}`, { method: "DELETE" });
-      if (!res.ok) {
-        setError("Falha ao excluir papel.");
-        return;
-      }
-      await load();
-    } catch {
-      setError("Falha ao excluir papel.");
-    }
-  }
-
-  function startEdit(role: Role) {
-    setEditingId(role.id);
-    setForm({
-      code: role.code,
-      name: role.name,
-      description: role.description ?? "",
-    });
-  }
-
-  const inputClass =
-    "h-10 w-full rounded-lg border border-brand-border bg-black/40 px-3.5 text-sm text-white placeholder:text-zinc-600 transition-colors focus:border-brand-accent focus:outline-none focus:ring-2 focus:ring-brand-accent/30";
 
   return (
     <div className="flex flex-col gap-6">
       <ScreenHeader
         title="Papéis"
-        description="Gerencie os papéis de acesso da organização."
+        description="Gerencie os papéis de acesso e suas permissões."
       />
 
       {error ? (
@@ -119,137 +91,108 @@ export default function RolesClient() {
         </p>
       ) : null}
 
-      <form
-        onSubmit={handleSubmit}
-        className="rounded-lg border border-brand-border bg-brand-surface p-5"
-      >
-        <h2 className="mb-4 font-mono text-xs font-semibold uppercase tracking-wide text-white">
-          {editingId ? "Editar papel" : "Novo papel"}
-        </h2>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-          <div className="flex flex-col gap-1.5">
-            <label htmlFor="code" className="font-mono text-[10px] uppercase tracking-wide text-brand-text-secondary">
-              Código
-            </label>
-            <input
-              id="code"
-              value={form.code}
-              onChange={(e) => setForm({ ...form, code: e.target.value })}
-              className={inputClass}
-              placeholder="ex: coordenador"
-              required
-            />
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <label htmlFor="name" className="font-mono text-[10px] uppercase tracking-wide text-brand-text-secondary">
-              Nome
-            </label>
-            <input
-              id="name"
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-              className={inputClass}
-              placeholder="ex: Coordenador"
-              required
-            />
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <label htmlFor="description" className="font-mono text-[10px] uppercase tracking-wide text-brand-text-secondary">
-              Descrição
-            </label>
-            <input
-              id="description"
-              value={form.description}
-              onChange={(e) => setForm({ ...form, description: e.target.value })}
-              className={inputClass}
-              placeholder="Descrição do papel"
-            />
-          </div>
-        </div>
-        <div className="mt-4 flex items-center gap-2">
-          <button
-            type="submit"
-            disabled={saving}
-            className="flex h-10 items-center justify-center rounded-lg bg-brand-primary px-4 text-sm font-semibold text-white transition-colors hover:bg-brand-primary-hover disabled:opacity-60"
+      <DataTable<Role>
+        title="Papéis existentes"
+        rows={roles}
+        rowKey={(r) => r.id}
+        loading={loading}
+        emptyText="Nenhum papel cadastrado."
+        countLabel="registros"
+        totalItems={totalItems}
+        page={page}
+        totalPages={totalPages}
+        pageSize={PAGE_SIZE}
+        onPageChange={changePage}
+        action={
+          <Link
+            href="/dashboard/papeis/novo"
+            className="flex h-9 items-center gap-1.5 rounded-lg bg-gradient-to-b from-brand-accent to-brand-primary px-3.5 text-sm font-semibold text-white shadow-glow transition-all hover:-translate-y-0.5 hover:brightness-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent"
           >
-            {saving ? "Salvando…" : editingId ? "Salvar alterações" : "Criar papel"}
-          </button>
-          {editingId && (
-            <button
-              type="button"
-              onClick={() => {
-                setEditingId(null);
-                setForm(EMPTY_FORM);
-              }}
-              className="flex h-10 items-center rounded-lg border border-brand-border px-4 text-sm text-brand-text-secondary transition-colors hover:text-white"
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              className="h-4 w-4"
+              aria-hidden="true"
             >
-              Cancelar
-            </button>
-          )}
-        </div>
-      </form>
-
-      <div className="rounded-lg border border-brand-border bg-brand-surface">
-        <div className="flex items-center justify-between border-b border-brand-border px-5 py-4">
-          <h2 className="font-mono text-xs font-semibold uppercase tracking-wide text-white">
-            Papéis existentes
-          </h2>
-          <span className="rounded-md border border-brand-border bg-black/40 px-2 py-0.5 font-mono text-[11px] text-brand-text-secondary">
-            {roles.length} registros
-          </span>
-        </div>
-        {loading ? (
-          <p className="px-5 py-6 text-sm text-brand-text-secondary">Carregando…</p>
-        ) : roles.length === 0 ? (
-          <p className="px-5 py-6 text-sm text-brand-text-secondary">
-            Nenhum papel cadastrado.
-          </p>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
-              <thead>
-                <tr className="border-b border-brand-border">
-                  <th className="px-5 py-3 font-mono text-[11px] font-semibold uppercase tracking-wide text-brand-text-secondary">Código</th>
-                  <th className="px-5 py-3 font-mono text-[11px] font-semibold uppercase tracking-wide text-brand-text-secondary">Nome</th>
-                  <th className="px-5 py-3 font-mono text-[11px] font-semibold uppercase tracking-wide text-brand-text-secondary">Descrição</th>
-                  <th className="px-5 py-3 font-mono text-[11px] font-semibold uppercase tracking-wide text-brand-text-secondary">Permissões</th>
-                  <th className="px-5 py-3 text-right font-mono text-[11px] font-semibold uppercase tracking-wide text-brand-text-secondary">Ações</th>
-                </tr>
-              </thead>
-              <tbody>
-                {roles.map((role) => (
-                  <tr key={role.id} className="border-b border-brand-border/60 last:border-0 hover:bg-white/5">
-                    <td className="px-5 py-3 font-mono text-brand-text-secondary">{role.code}</td>
-                    <td className="px-5 py-3 text-white">{role.name}</td>
-                    <td className="px-5 py-3 text-brand-text-secondary">{role.description || "—"}</td>
-                    <td className="px-5 py-3 text-brand-text-secondary">
-                      {role.permissions?.length ?? 0}
-                    </td>
-                    <td className="px-5 py-3">
-                      <div className="flex justify-end gap-2">
-                        <button
-                          type="button"
-                          onClick={() => startEdit(role)}
-                          className="rounded border border-brand-border px-2.5 py-1 text-xs text-brand-accent transition-colors hover:text-white"
-                        >
-                          Editar
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleDelete(role.id)}
-                          className="rounded border border-red-500/40 px-2.5 py-1 text-xs text-red-300 transition-colors hover:bg-red-500/10"
-                        >
-                          Excluir
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
+              <path
+                d="M12 5v14M5 12h14"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+              />
+            </svg>
+            Novo papel
+          </Link>
+        }
+        columns={[
+          {
+            key: "name",
+            label: "Nome",
+            cellClassName: "text-white",
+            render: (role) => (
+              <Link
+                href={`/dashboard/papeis/${role.id}`}
+                className="font-medium text-white transition-colors hover:text-brand-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent rounded"
+              >
+                {role.name}
+              </Link>
+            ),
+          },
+          {
+            key: "description",
+            label: "Descrição",
+            render: (role) => role.description || "—",
+          },
+          {
+            key: "permissions",
+            label: "Permissões",
+            render: (role) => {
+              const count = permissionsByRole[role.id]?.length ?? 0;
+              return count === 0 ? (
+                <span className="text-brand-text-secondary">—</span>
+              ) : (
+                <span className="inline-flex items-center gap-1.5">
+                  <span
+                    className="h-1.5 w-1.5 rounded-full bg-emerald-400"
+                    aria-hidden="true"
+                  />
+                  <span className="font-mono text-[11px] text-brand-text-secondary">
+                    {count} permissões
+                  </span>
+                </span>
+              );
+            },
+          },
+          {
+            key: "actions",
+            label: "Ações",
+            headerClassName: "text-right",
+            cellClassName: "text-right",
+            render: (role) => (
+              <Link
+                href={`/dashboard/papeis/${role.id}`}
+                className="inline-flex items-center gap-1 rounded border border-brand-border px-2.5 py-1 text-xs text-brand-text-secondary transition-colors hover:border-brand-accent/50 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent"
+              >
+                Ver
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  className="h-3.5 w-3.5"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M9 5l7 7-7 7"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </Link>
+            ),
+          },
+        ]}
+      />
     </div>
   );
 }

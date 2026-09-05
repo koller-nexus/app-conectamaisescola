@@ -1,37 +1,44 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAuthToken } from "@/lib/auth-cookies";
-import { getRoles, createRole } from "@/lib/api";
+import { getAuthToken, getCsrfToken } from "@/lib/auth-cookies";
+import { ApiError, createRole, getRoles } from "@/lib/api";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   const token = await getAuthToken();
-  const roles = await getRoles(token);
-  return NextResponse.json(roles);
+  const page = Number(req.nextUrl.searchParams.get("page") ?? 1);
+  const pageSize = Number(req.nextUrl.searchParams.get("page_size") ?? 20);
+  try {
+    const roles = await getRoles(token, page, pageSize);
+    return NextResponse.json(roles);
+  } catch (error) {
+    return NextResponse.json(
+      { error: error instanceof ApiError ? error.message : "Falha ao carregar papéis." },
+      { status: error instanceof ApiError ? error.status : 500 },
+    );
+  }
 }
 
 export async function POST(req: NextRequest) {
-  const token = await getAuthToken();
-  if (!token) {
+  const [token, csrf] = await Promise.all([getAuthToken(), getCsrfToken()]);
+  if (!token || !csrf) {
     return NextResponse.json({ error: "Não autenticado" }, { status: 401 });
   }
   const body = await req.json().catch(() => null);
-  if (!body?.code || !body?.name) {
+  if (!body?.name) {
     return NextResponse.json(
-      { error: "Código e nome são obrigatórios" },
+      { error: "Nome é obrigatório" },
       { status: 400 },
     );
   }
   try {
-    const role = await createRole(token, {
-      code: body.code,
+    const role = await createRole(token, csrf, {
       name: body.name,
       description: body.description,
-      permissions: body.permissions,
     });
-    return NextResponse.json(role);
-  } catch {
+    return NextResponse.json(role, { status: 201 });
+  } catch (error) {
     return NextResponse.json(
-      { error: "Falha ao criar papel." },
-      { status: 500 },
+      { error: error instanceof ApiError ? error.message : "Falha ao criar papel." },
+      { status: error instanceof ApiError ? error.status : 500 },
     );
   }
 }

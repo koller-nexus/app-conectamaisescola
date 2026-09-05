@@ -7,9 +7,26 @@
   --brand-primary-hover: #1d4ed8;
   --brand-accent: #3b82f6;
   --brand-surface: #18181b;
+  --brand-surface-2: #202024;
   --brand-text-secondary: #a1a1aa;
   --brand-border: #27272a;
   --brand-error: #ef4444;
+  --brand-success: #34d399;
+  --brand-warning: #f59e0b;
+
+  --shadow-card:
+    inset 0 1px 0 0 rgb(255 255 255 / 0.04),
+    0 10px 30px -12px rgb(0 0 0 / 0.55);
+  --shadow-card-hover:
+    inset 0 1px 0 0 rgb(255 255 255 / 0.06),
+    0 18px 44px -16px rgb(0 0 0 / 0.65),
+    0 0 0 1px rgb(59 130 246 / 0.08);
+  --shadow-glow:
+    0 0 0 1px rgb(59 130 246 / 0.18),
+    0 8px 32px -8px rgb(37 99 235 / 0.5);
+  --shadow-glow-strong:
+    0 0 0 1px rgb(59 130 246 / 0.28),
+    0 12px 48px -8px rgb(37 99 235 / 0.65);
 }
 
 @theme inline {
@@ -19,17 +36,122 @@
   --color-brand-primary-hover: var(--brand-primary-hover);
   --color-brand-accent: var(--brand-accent);
   --color-brand-surface: var(--brand-surface);
+  --color-brand-surface-2: var(--brand-surface-2);
   --color-brand-text-secondary: var(--brand-text-secondary);
   --color-brand-border: var(--brand-border);
   --color-brand-error: var(--brand-error);
+  --color-brand-success: var(--brand-success);
+  --color-brand-warning: var(--brand-warning);
   --font-sans: var(--font-inter);
   --font-mono: var(--font-jetbrains-mono);
+  --shadow-card: var(--shadow-card);
+  --shadow-card-hover: var(--shadow-card-hover);
+  --shadow-glow: var(--shadow-glow);
+  --shadow-glow-strong: var(--shadow-glow-strong);
 }
 
 body {
   background: var(--background);
+  background-image: radial-gradient(
+    1100px 700px at 75% -10%,
+    rgb(37 99 235 / 0.07),
+    transparent 60%
+  );
   color: var(--foreground);
   font-family: var(--font-inter), Arial, Helvetica, sans-serif;
+}
+
+@layer components {
+  .card {
+    position: relative;
+    border-radius: 0.5rem;
+    border: 1px solid var(--brand-border);
+    background: var(--brand-surface);
+    box-shadow: var(--shadow-card);
+  }
+
+  .card-accent::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 1rem;
+    right: 1rem;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgb(59 130 246 / 0.8),
+      transparent
+    );
+    pointer-events: none;
+  }
+
+  .card-hover {
+    transition:
+      border-color 0.2s ease,
+      transform 0.2s ease,
+      box-shadow 0.2s ease,
+      background-color 0.2s ease;
+  }
+
+  .card-hover:hover {
+    border-color: rgb(59 130 246 / 0.45);
+    box-shadow: var(--shadow-card-hover);
+    transform: translateY(-2px);
+  }
+
+  .text-gradient {
+    background: linear-gradient(100deg, #ffffff 30%, var(--brand-accent) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .bg-grid {
+    background-image:
+      linear-gradient(rgb(255 255 255 / 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(255 255 255 / 0.04) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+
+  .bg-noise {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 160px 160px;
+  }
+
+  .input {
+    width: 100%;
+    height: 2.75rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--brand-border);
+    background: rgb(0 0 0 / 0.4);
+    padding: 0 0.875rem;
+    font-size: 0.875rem;
+    color: var(--foreground);
+    transition:
+      border-color 0.15s ease,
+      box-shadow 0.15s ease,
+      background-color 0.15s ease;
+  }
+
+  .input::placeholder {
+    color: #52525b;
+  }
+
+  .input:focus {
+    outline: none;
+    border-color: var(--brand-accent);
+    box-shadow: 0 0 0 2px rgb(59 130 246 / 0.25);
+  }
+
+  .input:disabled {
+    opacity: 0.6;
+  }
+
+  .input[aria-invalid="true"] {
+    border-color: rgb(239 68 68 / 0.7);
+    box-shadow: 0 0 0 2px rgb(239 68 68 / 0.2);
+  }
 }
 
 @keyframes rise-in {
@@ -45,6 +167,20 @@ body {
 
 .animate-rise {
   animation: rise-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes pulse-dot {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
+.animate-pulse-dot {
+  animation: pulse-dot 2.4s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {

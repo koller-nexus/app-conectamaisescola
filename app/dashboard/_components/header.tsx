@@ -26,7 +26,7 @@ export default function Header({ me }: { me: MeResponse }) {
         <button
           type="button"
           aria-label={`Notificações (${notifications} não lidas)`}
-          className="relative flex h-10 w-10 items-center justify-center rounded-lg border border-brand-border bg-black/40 text-brand-text-secondary transition-colors hover:text-white"
+          className="relative flex h-10 w-10 items-center justify-center rounded-lg border border-brand-border bg-black/40 text-brand-text-secondary transition-colors hover:border-brand-accent/50 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent"
         >
           <svg
             viewBox="0 0 24 24"
@@ -43,7 +43,7 @@ export default function Header({ me }: { me: MeResponse }) {
             />
           </svg>
           {notifications > 0 && (
-            <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-brand-primary px-1 font-mono text-[10px] font-semibold text-white">
+            <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-gradient-to-b from-brand-accent to-brand-primary px-1 font-mono text-[10px] font-semibold text-white shadow-glow">
               {notifications}
             </span>
           )}
@@ -53,9 +53,9 @@ export default function Header({ me }: { me: MeResponse }) {
           type="button"
           onClick={() => setModalOpen(true)}
           aria-label="Abrir informações do usuário"
-          className="flex items-center gap-2.5 rounded-lg border border-brand-border bg-black/40 p-1.5 pr-3 transition-colors hover:border-brand-accent/50"
+          className="flex items-center gap-2.5 rounded-lg border border-brand-border bg-black/40 p-1.5 pr-3 transition-colors hover:border-brand-accent/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent"
         >
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-primary text-sm font-semibold text-white">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-brand-primary to-brand-accent text-sm font-semibold text-white shadow-glow">
             {me.user.email.charAt(0).toUpperCase()}
           </div>
           <span className="hidden text-left sm:block">

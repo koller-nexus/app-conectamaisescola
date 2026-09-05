@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { getAuthToken } from "@/lib/auth-cookies";
-import { getCurrentUser, isAdmin } from "@/lib/api";
+import { ApiError, getCurrentUser, isAdmin } from "@/lib/api";
 import Sidebar from "./_components/sidebar";
 import Header from "./_components/header";
 
@@ -14,7 +14,15 @@ export default async function DashboardLayout({
     redirect("/login");
   }
 
-  const me = await getCurrentUser(token);
+  let me;
+  try {
+    me = await getCurrentUser(token);
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 401) {
+      redirect("/login");
+    }
+    throw error;
+  }
   const admin = isAdmin(me);
 
   return (
